@@ -1,8 +1,10 @@
 # Projektets Namn
 
+Cinematrix
+
 ## Beskrivning
 
-Här beskriver du applikationens funktionalitet.
+Cinematrix är en applikation där användare kan hitta information och dela med sig om sina åsikter kring filmer. De kan söka upp sina favorit fimer och läsa all möjlig information om filmed de valt. Finna inte filmen kan användare lägga till fimer för att hjälpa till och utöka databasen för att så många som möjligt kan hitta sina favorit filmer. Användare kan även betysätta samt skriva recentioner om filmerna.
 
 ### Exempel (ta bort)
 
@@ -10,16 +12,11 @@ Book-O-Matic är en applikation där användare kan skapa virtuella bokhyllor. D
 
 ## Användare och roller
 
-Här skriver du ner vilka typer av användare (som i inloggade användare) det finns, och vad de har för rättigheter, det vill säga, vad de kan göra (tänk admin, standard användare, etc).
+Gäst användare kan man se listan, all information, betygr och recentioner om filmerna. Gästerna kan inte lägga till betyg eller skriva recentioner.
 
-### Exempel (ta bort)
+Inloggad användare kan förutom att visa, äver lägga till ny filmer samt skriva recentioner och betyg sätta filmer.
 
-Gästanvändare - oinloggad
-. Kan söka efter titlar och se genomsnittligt betyg. Kan inte se eller skriva kommentarer eller sätta egna betyg.
-
-Standardanvändare - inloggad. Kan allt gästanvändare kan, men kan även lägga in nya böcker och skriva kommentarer etc. Kan ta bort sitt eget konto och information kopplat till det.
-
-Adminanvändare - kan ta bort/editera böcker, kommentarer och användare.
+Administratör kan redigera information om filmerna samt ta bort filmer och ta bort användare som missköter sig.
 
 ## ER-Diagram
 
