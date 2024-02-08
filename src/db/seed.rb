@@ -29,21 +29,22 @@ class Seeder
         puts "  * Creating tables"
         db.execute('CREATE TABLE movies(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
+            title TEXT NOT NULL,
             description TEXT,
-            director TEXT,
-            year TEXT
+            year TEXT,
+            geanera TEXT,
+            image BLOB
         )')
     end
     
     def self.seed_data
         puts "  * Seeding tables"
         movies = [
-            {name: 'testmovie 1'},
+            {title: 'testmovie 1'},
         ]
     
-        movies.each do |contact|
-            db.execute('INSERT INTO movies (name) VALUES (?)', contact[:name])
+        movies.each do |movie|
+            db.execute('INSERT INTO movies (title) VALUES (?)', movie[:title])
         end
     end
 end

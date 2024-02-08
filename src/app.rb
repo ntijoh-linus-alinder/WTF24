@@ -11,7 +11,10 @@ class App < Sinatra::Base
     get '/' do
         erb :index
     end
-
-    
+    get '/movies' do
+        @data = db.execute('SELECT * FROM movies')
+        p(@data)
+        erb :movies
+    end
     
 end
