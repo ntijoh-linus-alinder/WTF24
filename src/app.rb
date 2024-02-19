@@ -13,8 +13,13 @@ class App < Sinatra::Base
     end
     get '/movies' do
         @data = db.execute('SELECT * FROM movies')
-        p(@data)
         erb :movies
     end
     
+
+
+    get '/movies/:id' do
+        @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id])
+        erb :id
+    end
 end

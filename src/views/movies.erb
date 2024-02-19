@@ -1,1 +1,22 @@
-<%= @data%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<% @data.each do |movie| %>
+    <div class="card">
+        <div class="image"><img class="image" src="<%=movie['image']%>"></div>
+        <div class="title"><%= movie['title'] %></div>
+        <div class="geanera"><%= movie['geanera'] %></div>
+    </div>
+<% end %>
+    
+
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .card {
+    width: 250px;
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .image {
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .image img {
+    width: 100%;
+    height: auto;
+  }
+  
+  .title {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .geanera {
+    padding: 10px;
+    text-align: center;
+  }
+  
