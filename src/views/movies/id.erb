@@ -1,1 +1,32 @@
-<%= @data  %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<% @data.each do |movie| %>
+   <label>title: </label><%= movie['title'] %>
+   <br>
+   <label>Description: </label><%= movie['description'] %>
+    <br>
+   <label>Release year: </label><%= movie['Year'] %>
+   <br>
+   <label>image: </label><img src="<%=movie['image']%>">
+   <br>
+    <label>geanera:
+    <% @joined_data.each do |geanera| %>
+        <%= geanera['geanera_name'] %>
+    <% end %>
+    </label>
+<% end %>
+    
+</body>
+</html>
+
+
+
+

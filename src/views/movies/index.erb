@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
 <% @data.each do |movie| %>
+  <a href="/movies/<%= movie['id'] %>">
     <div class="card">
-        <div class="image"><img class="image" src="<%=movie['image']%>"></div>
-        <div class="title"><%= movie['title'] %></div>
-        <div class="geanera"><%= movie['geanera'] %></div>
+      <div class="image"><img class="image" src="<%= movie['image'] %>"></div>
+      <div class="title"><%= movie['title'] %></div>
+      <div class="geanera"><%= movie['geanera'] %></div>
     </div>
+  </a>
 <% end %>
     
 

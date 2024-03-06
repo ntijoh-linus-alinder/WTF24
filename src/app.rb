@@ -13,12 +13,7 @@ class App < Sinatra::Base
     end
 
     get '/movies' do
-        query = '
-        select * FROM movies
-        JOIN movies_geaneras ON movies.id = movies_geaneras.movie_id
-        JOIN geaneras ON movies_geaneras.id = geaneras.id
-        '
-
+        
         @data = db.execute('SELECT * FROM movies')
         erb :'/movies/index'
     end
@@ -46,6 +41,12 @@ class App < Sinatra::Base
 
     get '/movies/:id' do
         @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id])
+
+        @joined_data = db.execute('SELECT * FROM movies
+            INNER JOIN movies_geaneras ON movies.id = movies_geaneras.movie_id
+            INNER JOIN geaneras ON geaneras.id = movies_geaneras.geanera_id
+            WHERE movies.id = ?', params[:id])
+
         erb :'/movies/id'
     end
 end
