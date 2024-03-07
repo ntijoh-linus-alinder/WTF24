@@ -19,6 +19,7 @@ class App < Sinatra::Base
     end
     
     get '/movies/new' do
+        @all_geaneras = db.execute('SELECT * FROM geaneras')
         erb :'/movies/new'
     end
 
@@ -26,14 +27,24 @@ class App < Sinatra::Base
         title = params['title']
         description = params['description'] 
         year = params['year'] 
+
+        geanera_ids = params['geanera_id'] 
+        p geanera_ids 
         image = params["image"]
         File.open('public/img/' + image[:filename], "w") do |f|
             f.write(image[:tempfile].read)
         end
 
         query = 'INSERT INTO movies (title,description,year,image) VALUES (?,?,?,?) RETURNING *'
+
         result = db.execute(query,title,description,year,"img/"+image[:filename]).first
-        redirect "/movies/#{result['id']}" 
+
+        geanera_ids.each do |geanera|
+            p geanera
+            db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
+        end
+        
+        redirect "/movies/#{result['id']}"   
     end
 
 

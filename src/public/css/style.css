@@ -35,3 +35,7 @@ body {
     text-align: center;
   }
   
+  .id_img {
+    height: 100px;
+    width: 100px;
+  }

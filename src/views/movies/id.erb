@@ -15,7 +15,7 @@
     <br>
    <label>Release year: </label><%= movie['Year'] %>
    <br>
-   <label>image: </label><img src="<%=movie['image']%>">
+   <label>image: </label><img class="id_img" src="/<%=movie['image']%>" style="max-width: 200px;">
    <br>
     <label>geanera:
     <% @joined_data.each do |geanera| %>
