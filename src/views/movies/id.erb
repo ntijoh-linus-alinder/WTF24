@@ -13,13 +13,19 @@
    <br>
    <label>Description: </label><%= movie['description'] %>
     <br>
-   <label>Release year: </label><%= movie['Year'] %>
+   <label>Release year: </label><%= movie['year'] %>
    <br>
    <label>image: </label><img class="id_img" src="/<%=movie['image']%>" style="max-width: 200px;">
    <br>
     <label>geanera:
     <% @joined_data.each do |geanera| %>
         <%= geanera['geanera_name'] %>
+    <% end %>
+    </label>
+    <br>
+    <label>Cast:
+    <% @cast_join.each do |cast| %>
+        <%= cast['name'] %>,
     <% end %>
     </label>
 <% end %>

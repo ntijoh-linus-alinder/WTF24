@@ -29,7 +29,7 @@ class App < Sinatra::Base
         year = params['year'] 
 
         geanera_ids = params['geanera_id'] 
-        p geanera_ids 
+
         image = params["image"]
         File.open('public/img/' + image[:filename], "w") do |f|
             f.write(image[:tempfile].read)
@@ -40,7 +40,6 @@ class App < Sinatra::Base
         result = db.execute(query,title,description,year,"img/"+image[:filename]).first
 
         geanera_ids.each do |geanera|
-            p geanera
             db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
         end
         
@@ -56,6 +55,11 @@ class App < Sinatra::Base
         @joined_data = db.execute('SELECT * FROM movies
             INNER JOIN movies_geaneras ON movies.id = movies_geaneras.movie_id
             INNER JOIN geaneras ON geaneras.id = movies_geaneras.geanera_id
+            WHERE movies.id = ?', params[:id])
+
+        @cast_join = db.execute('SELECT * FROM movies
+            INNER JOIN movies_casts ON movies.id = movies_casts.movie_id
+            INNER JOIN casts ON casts.id = movies_casts.cast_id
             WHERE movies.id = ?', params[:id])
 
         erb :'/movies/id'
