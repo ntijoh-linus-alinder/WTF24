@@ -47,7 +47,40 @@ class App < Sinatra::Base
     end
 
 
+    get '/movies/:id/edit' do
+        @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id]).first
+        @all_geaneras = db.execute('SELECT * FROM geaneras')
+        erb :'/movies/edit'
+    end
 
+    post '/movies/:id/edit' do
+        id = params[:id]
+        title = params['title']
+        description = params['description'] 
+        year = params['year'] 
+        geanera_ids = params['geanera_id'] || []
+        image = params["image"]
+        
+        if image == nil
+            query = 'UPDATE movies SET title = ?, description = ?, year = ? WHERE id = ?'
+            result = db.execute(query, title, description, year, id)
+        else 
+            File.open('public/img/' + image[:filename], "w") do |f|
+                f.write(image[:tempfile].read)
+            end
+    
+            query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
+            result = db.execute(query, title, description, year, "img/"+image[:filename], id)
+        end
+           
+        geanera_ids.each do |geanera|
+            db.execute('UPDATE movies_geaneras SET geanera_id = ? WHERE movie_id = ?', geanera, result['id'])
+        end
+    
+        redirect "/movies/#{id}"
+    end
+    
+    
 
     get '/movies/:id' do
         @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id])

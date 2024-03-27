@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<form action='/movies/<%= @data['id'] %>/edit' method='post' enctype="multipart/form-data"> 
+  <input type='text' placeholder='title' name='title' value="<%= @data['title'] %>">
+  <br>
+  <input type='text' placeholder='beskrivning' name='description' value="<%= @data['description'] %>">
+  <br>
+  <input type='text' placeholder='år' name='year' value="<%= @data['year'] %>">
+  <br>
+  <% @all_geaneras.each do |item| %>
+    <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
+  <% end %>
+  <br>
+  <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @data['image'] %>">
+  <br>
+  <button type='submit'>Spara</button>
+</form> 
+</body>
+</html>
