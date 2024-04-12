@@ -6,20 +6,26 @@
     <title>Document</title>
 </head>
 <body>
-<form action='/movies/<%= @data['id'] %>/edit' method='post' enctype="multipart/form-data"> 
-  <input type='text' placeholder='title' name='title' value="<%= @data['title'] %>">
+<form action='/movies/<%= @movie['id'] %>/edit' method='post' enctype="multipart/form-data"> 
+  <input type='text' placeholder='title' name='title' value='<%= @movie['title'] %>'>
   <br>
-  <input type='text' placeholder='beskrivning' name='description' value="<%= @data['description'] %>">
+  <input type='text' placeholder='beskrivning' name='description' value='<%= @movie['description'] %>'>
   <br>
-  <input type='text' placeholder='år' name='year' value="<%= @data['year'] %>">
+  <input type='text' placeholder='år' name='year' value='<%= @movie['year'] %>'>
   <br>
   <% @all_geaneras.each do |item| %>
-    <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
+    <% if @movie_geaneras.include?(item['id'].to_i) %>
+      <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>" checked> <%= item['geanera_name'] %><br>
+    <% else %>
+      <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
+    <% end %>
   <% end %>
   <br>
-  <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @data['image'] %>">
+  <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @movie['image'] %>">
   <br>
   <button type='submit'>Spara</button>
-</form> 
+</form>
+
+
 </body>
 </html>

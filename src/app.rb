@@ -48,17 +48,21 @@ class App < Sinatra::Base
 
 
     get '/movies/:id/edit' do
-        @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id]).first
+        @movie = db.execute('SELECT * FROM movies WHERE id = ?', params[:id]).first
         @all_geaneras = db.execute('SELECT * FROM geaneras')
+        @movie_geaneras = db.execute('SELECT geanera_id FROM movies_geaneras WHERE movie_id = ?', params[:id]).map {|row| row['geanera_id'].to_i}
         erb :'/movies/edit'
-    end
+
+      end
+      
 
     post '/movies/:id/edit' do
         id = params[:id]
         title = params['title']
         description = params['description'] 
         year = params['year'] 
-        geanera_ids = params['geanera_id'] || []
+        geanera_ids = params['geanera_id']
+        
         image = params["image"]
         
         if image == nil
@@ -72,9 +76,10 @@ class App < Sinatra::Base
             query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
             result = db.execute(query, title, description, year, "img/"+image[:filename], id)
         end
-           
+        db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
+
         geanera_ids.each do |geanera|
-            db.execute('UPDATE movies_geaneras SET geanera_id = ? WHERE movie_id = ?', geanera, result['id'])
+            db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
         end
     
         redirect "/movies/#{id}"
@@ -84,7 +89,6 @@ class App < Sinatra::Base
 
     get '/movies/:id' do
         @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id])
-
         @joined_data = db.execute('SELECT * FROM movies
             INNER JOIN movies_geaneras ON movies.id = movies_geaneras.movie_id
             INNER JOIN geaneras ON geaneras.id = movies_geaneras.geanera_id
