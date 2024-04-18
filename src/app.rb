@@ -20,6 +20,7 @@ class App < Sinatra::Base
     
     get '/movies/new' do
         @all_geaneras = db.execute('SELECT * FROM geaneras')
+        @all_cast = db.execute('SELECT * FROM casts')
         erb :'/movies/new'
     end
 
@@ -29,7 +30,8 @@ class App < Sinatra::Base
         year = params['year'] 
 
         geanera_ids = params['geanera_id'] 
-
+        cast_id = params['cast_id']
+        selected_actors = params['actors'] || []
         image = params["image"]
         File.open('public/img/' + image[:filename], "w") do |f|
             f.write(image[:tempfile].read)
@@ -42,6 +44,10 @@ class App < Sinatra::Base
         geanera_ids.each do |geanera|
             db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
         end
+        selected_actors.each do |actor_id|
+            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], actor_id)
+          end
+        db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], cast_id)
         
         redirect "/movies/#{result['id']}"   
     end
@@ -53,7 +59,7 @@ class App < Sinatra::Base
         @movie_geaneras = db.execute('SELECT geanera_id FROM movies_geaneras WHERE movie_id = ?', params[:id]).map {|row| row['geanera_id'].to_i}
         erb :'/movies/edit'
 
-      end
+    end
       
 
     post '/movies/:id/edit' do
@@ -87,9 +93,10 @@ class App < Sinatra::Base
 
     post '/movies/:id/delete' do
         id = params[:id]
+
         db.execute('DELETE FROM movies WHERE id = ?', id)
         db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
-        db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id)
+        db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id.to_i)
         redirect "/movies"
     end
     

@@ -17,9 +17,44 @@
     <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
   <% end %>
   <br>
+  <select id="actorSelector">
+    <% @all_cast.each do |actor| %>
+      <option value="<%= actor['id'] %>"><%= actor['name'] %></option>
+    <% end %>
+  </select>
+  <button type="button" onclick="addActor()">Add Actor</button>
+  <br>
+  <ul id="selectedActor"></ul>
+  <input type="hidden" name="selectedActor" id="selectedActorInput" value="">
+  <br>
   <input type="file" placeholder='bild' name='image' accept='image/*'>
   <br>
   <button type='submit'>Spara</button>
 </form> 
 </body>
+<script>
+  function addActor() {
+    var select = document.getElementById("actorSelector");
+    var selectedOption = select.options[select.selectedIndex];
+    var selectedActorList = document.getElementById("selectedActor");
+    var hiddenInput = document.getElementById("selectedActorInput");
+
+    var actors = document.querySelectorAll("#selectedActor li");
+    for (var i = 0; i < actors.length; i++) {
+      if (actors[i].textContent === selectedOption.text) {
+
+        return;
+      }
+    }
+
+    var listItem = document.createElement("li");
+    listItem.textContent = selectedOption.text;
+    var hiddenField = document.createElement("input");
+    hiddenField.type = "hidden";
+    hiddenField.name = "actors[]";
+    hiddenField.value = selectedOption.value;
+    selectedActorList.appendChild(listItem);
+    hiddenInput.appendChild(hiddenField);
+  }
+</script>
 </html>
