@@ -30,6 +30,9 @@
     </label>
     <br>
     <a href="/movies/<%= movie['id'] %>/edit" class="button"><button>edit</button></a>
+    <form action='/movies/<%= movie['id'] %>/delete' method='post'>
+        <button type="submit">delete</button>
+    </form>
 <% end %>
 
 </body>

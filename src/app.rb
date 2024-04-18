@@ -84,6 +84,14 @@ class App < Sinatra::Base
     
         redirect "/movies/#{id}"
     end
+
+    post '/movies/:id/delete' do
+        id = params[:id]
+        db.execute('DELETE FROM movies WHERE id = ?', id)
+        db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
+        db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id)
+        redirect "/movies"
+    end
     
     
 
