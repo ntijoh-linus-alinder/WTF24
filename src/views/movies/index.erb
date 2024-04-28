@@ -8,7 +8,14 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
+  <header>
+    <h1>Cinematrix</h1>
+    <ul>
+      <li>movies</li>
+      <li>log in</li>
+    </ul>
+  </header>
+<div class="container">
 <% @data.each do |movie| %>
   <a href="/movies/<%= movie['id'] %>">
     <div class="card">
@@ -17,10 +24,9 @@
       <div class="geanera"><%= movie['geanera'] %></div>
     </div>
   </a>
-<% end %>
-    
+<% end %> 
 <a href="/movies/new" class="button"><button>New movie</button></a>
-
+</div>
 
 </body>
 </html>

@@ -1,0 +1,9 @@
+<form action='/actors' method='post' enctype="multipart/form-data"> 
+    <input type='text' placeholder='namn' name='name'>
+    <button type='submit'>Spara</button>
+</form> 
+
+  <% @all_cast.each do |cast| %>
+    <%= cast['name'] %>
+    <br>
+  <% end %>

@@ -60,7 +60,22 @@ class App < Sinatra::Base
         erb :'/movies/edit'
 
     end
-      
+    
+
+    get '/actors/new' do
+        @all_cast = db.execute('SELECT * FROM casts')
+        erb :'/actors/new'
+    end
+
+    get '/actors' do
+        erb :'/actors/index'
+    end
+
+    post '/actors' do 
+        name = params['name']
+        db.execute('INSERT INTO casts (name) VALUES (?)', name)
+        redirect "/actors/new" 
+    end
 
     post '/movies/:id/edit' do
         id = params[:id]
