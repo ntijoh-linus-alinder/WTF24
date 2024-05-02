@@ -28,25 +28,35 @@ class App < Sinatra::Base
         title = params['title']
         description = params['description'] 
         year = params['year'] 
-
+    
         geanera_ids = params['geanera_id'] 
         cast_id = params['cast_id']
         selected_actors = params['actors'] || []
         image = params["image"]
-        File.open('public/img/' + image[:filename], "w") do |f|
-            f.write(image[:tempfile].read)
+        
+        if image && image[:filename]
+            File.open('public/img/' + image[:filename], "w") do |f|
+                f.write(image[:tempfile].read)
+            end
+            image_path = "img/#{image[:filename]}"
+        else
+            image_path = nil
         end
-
+    
         query = 'INSERT INTO movies (title,description,year,image) VALUES (?,?,?,?) RETURNING *'
-
-        result = db.execute(query,title,description,year,"img/"+image[:filename]).first
-
-        geanera_ids.each do |geanera|
-            db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
+    
+        result = db.execute(query, title, description, year, image_path).first
+    
+        unless geanera_ids.nil? || geanera_ids.empty?
+            geanera_ids.each do |geanera|
+                db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
+            end
         end
+    
         selected_actors.each do |actor_id|
             db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], actor_id)
-          end
+        end
+    
         db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], cast_id)
         
         redirect "/movies/#{result['id']}"   
@@ -57,6 +67,11 @@ class App < Sinatra::Base
         @movie = db.execute('SELECT * FROM movies WHERE id = ?', params[:id]).first
         @all_geaneras = db.execute('SELECT * FROM geaneras')
         @movie_geaneras = db.execute('SELECT geanera_id FROM movies_geaneras WHERE movie_id = ?', params[:id]).map {|row| row['geanera_id'].to_i}
+        @all_cast = db.execute('SELECT * FROM casts')
+        @cast_join = db.execute('SELECT * FROM movies
+        INNER JOIN movies_casts ON movies.id = movies_casts.movie_id
+        INNER JOIN casts ON casts.id = movies_casts.cast_id
+        WHERE movies.id = ?', params[:id])
         erb :'/movies/edit'
 
     end
@@ -86,25 +101,38 @@ class App < Sinatra::Base
         
         image = params["image"]
         
-        if image == nil
-            query = 'UPDATE movies SET title = ?, description = ?, year = ? WHERE id = ?'
-            result = db.execute(query, title, description, year, id)
-        else 
+        if image && image[:filename]
+            old_image_path = db.execute('SELECT image FROM movies WHERE id = ?', id).first['image']
+            if old_image_path && File.exist?('public/' + old_image_path)
+                File.delete('public/' + old_image_path)
+            end
+    
             File.open('public/img/' + image[:filename], "w") do |f|
                 f.write(image[:tempfile].read)
             end
-    
-            query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
-            result = db.execute(query, title, description, year, "img/"+image[:filename], id)
+            image_path = "img/#{image[:filename]}"
+        else
+            image_path = nil
         end
+    
+        if image_path.nil?
+            query = 'UPDATE movies SET title = ?, description = ?, year = ? WHERE id = ?'
+            result = db.execute(query, title, description, year, id)
+        else 
+            query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
+            result = db.execute(query, title, description, year, image_path, id)
+        end
+    
         db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
-
+    
         geanera_ids.each do |geanera|
             db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
         end
     
         redirect "/movies/#{id}"
     end
+    
+    
 
     post '/movies/:id/delete' do
         id = params[:id]

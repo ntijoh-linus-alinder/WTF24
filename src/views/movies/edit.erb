@@ -21,6 +21,11 @@
     <% end %>
   <% end %>
   <br>
+  <% @cast_join.each do |cast| %>
+        <%= cast['name'] %>,
+        <br>
+    <% end %>
+    <br>
   <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @movie['image'] %>">
   <br>
   <button type='submit'>Spara</button>

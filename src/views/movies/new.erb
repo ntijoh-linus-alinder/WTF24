@@ -27,7 +27,7 @@
   <ul id="selectedActor"></ul>
   <input type="hidden" name="selectedActor" id="selectedActorInput" value="">
   <p>cant fid actor in list?</p>
-  <a href="/actors/new" class="button"><button>New actors</button></a>
+  <a href="/actors/new" class="button">Add new actors</a>
   <br>
   <br>
   <input type="file" placeholder='bild' name='image' accept='image/*'>
@@ -45,7 +45,6 @@
     var actors = document.querySelectorAll("#selectedActor li");
     for (var i = 0; i < actors.length; i++) {
       if (actors[i].textContent === selectedOption.text) {
-
         return;
       }
     }
@@ -56,6 +55,15 @@
     hiddenField.type = "hidden";
     hiddenField.name = "actors[]";
     hiddenField.value = selectedOption.value;
+
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "X";
+    deleteButton.onclick = function() {
+      listItem.remove();
+      hiddenField.remove();
+    };
+
+    listItem.appendChild(deleteButton);
     selectedActorList.appendChild(listItem);
     hiddenInput.appendChild(hiddenField);
   }
