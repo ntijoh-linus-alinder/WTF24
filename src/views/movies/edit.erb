@@ -25,12 +25,56 @@
         <%= cast['name'] %>,
         <br>
     <% end %>
-    <br>
+  <br>
+  <select id="actorSelector">
+    <% @all_cast.each do |actor| %>
+      <option value="<%= actor['id'] %>"><%= actor['name'] %></option>
+    <% end %>
+  </select>
+  <button type="button" onclick="addActor()">Add Actor</button>
+  <br>
+  <ul id="selectedActor"></ul>
+  <input type="hidden" name="selectedActor" id="selectedActorInput" value="">
+  <p>cant fid actor in list?</p>
+  <a href="/actors/new" class="button">Add new actors</a>
+  <br>
+  <br>
   <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @movie['image'] %>">
   <br>
   <button type='submit'>Spara</button>
 </form>
-
-
 </body>
+<script>
+  function addActor() {
+    var select = document.getElementById("actorSelector");
+    var selectedOption = select.options[select.selectedIndex];
+    var selectedActorList = document.getElementById("selectedActor");
+    var hiddenInput = document.getElementById("selectedActorInput");
+
+    var actors = document.querySelectorAll("#selectedActor li");
+    for (var i = 0; i < actors.length; i++) {
+      if (actors[i].textContent === selectedOption.text) {
+        return;
+      }
+    }
+
+    var listItem = document.createElement("li");
+    listItem.textContent = selectedOption.text;
+    var hiddenField = document.createElement("input");
+    hiddenField.type = "hidden";
+    hiddenField.name = "actors[]";
+    hiddenField.value = selectedOption.value;
+
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "X";
+    deleteButton.onclick = function() {
+      listItem.remove();
+      hiddenField.remove();
+    };
+
+    listItem.appendChild(deleteButton);
+    selectedActorList.appendChild(listItem);
+    hiddenInput.appendChild(hiddenField);
+  }
+</script>
 </html>

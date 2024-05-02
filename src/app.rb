@@ -69,9 +69,9 @@ class App < Sinatra::Base
         @movie_geaneras = db.execute('SELECT geanera_id FROM movies_geaneras WHERE movie_id = ?', params[:id]).map {|row| row['geanera_id'].to_i}
         @all_cast = db.execute('SELECT * FROM casts')
         @cast_join = db.execute('SELECT * FROM movies
-        INNER JOIN movies_casts ON movies.id = movies_casts.movie_id
-        INNER JOIN casts ON casts.id = movies_casts.cast_id
-        WHERE movies.id = ?', params[:id])
+            INNER JOIN movies_casts ON movies.id = movies_casts.movie_id
+            INNER JOIN casts ON casts.id = movies_casts.cast_id
+            WHERE movies.id = ?', params[:id])
         erb :'/movies/edit'
 
     end
@@ -98,7 +98,8 @@ class App < Sinatra::Base
         description = params['description'] 
         year = params['year'] 
         geanera_ids = params['geanera_id']
-        
+        selected_actors = params['actors'] || []
+        cast_id = params['cast_id']
         image = params["image"]
         
         if image && image[:filename]
@@ -128,6 +129,12 @@ class App < Sinatra::Base
         geanera_ids.each do |geanera|
             db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
         end
+
+        selected_actors.each do |actor_id|
+            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, actor_id)
+        end
+    
+        db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, cast_id)
     
         redirect "/movies/#{id}"
     end
