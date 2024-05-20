@@ -1,4 +1,5 @@
 class App < Sinatra::Base
+    enable :session
 
     def db
         if @db == nil
@@ -6,6 +7,10 @@ class App < Sinatra::Base
             @db.results_as_hash = true
         end
         return @db
+    end
+
+    before do
+        @username = session[:username]
     end
 
     get '/' do
@@ -165,5 +170,46 @@ class App < Sinatra::Base
             WHERE movies.id = ?', params[:id])
 
         erb :'/movies/id'
+    end
+
+    get '/login' do
+
+        erb :'/users/index'
+    end
+    get '/register' do
+
+        erb :'/users/register'
+    end
+    get '/users/edit' do
+
+        erb :'/users/edit'
+    end
+
+    post '/register' do
+        email = params['email']
+        username = params['username']
+        cleartext_password = params['password']
+        hashed_password = BCrypt::Password.create(cleartext_password)
+
+        db.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)', email, username, hashed_password)
+        redirect '/login'
+    end
+
+    post '/login' do
+        username = params['username']
+        cleartext_password = params['password'] 
+      
+        user = db.execute('SELECT * FROM users WHERE username = ?', username).first
+        password_from_db = BCrypt::Password.new(user['password'])
+
+        if password_from_db == cleartext_password 
+          session[:user_id] = user['user_id'] 
+          session[:username] = username  
+          p "hej    "
+          redirect '/movies'  
+        else
+          nil
+        end
+
     end
 end

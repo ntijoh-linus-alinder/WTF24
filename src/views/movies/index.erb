@@ -13,6 +13,9 @@
     <ul>
       <li>movies</li>
       <li>log in</li>
+      <% if !session[:user_id].nil? %>
+          <li>User:<%=@username%></li>
+      <% end %>
     </ul>
   </header>
 <div class="container">
