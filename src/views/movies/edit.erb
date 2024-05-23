@@ -6,43 +6,57 @@
     <title>Document</title>
 </head>
 <body>
-<form action='/movies/<%= @movie['id'] %>/edit' method='post' enctype="multipart/form-data"> 
-  <input type='text' placeholder='title' name='title' value='<%= @movie['title'] %>'>
-  <br>
-  <input type='text' placeholder='beskrivning' name='description' value='<%= @movie['description'] %>'>
-  <br>
-  <input type='text' placeholder='år' name='year' value='<%= @movie['year'] %>'>
-  <br>
-  <% @all_geaneras.each do |item| %>
-    <% if @movie_geaneras.include?(item['id'].to_i) %>
-      <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>" checked> <%= item['geanera_name'] %><br>
-    <% else %>
-      <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
+<% if @username %>
+  <form action='/movies/<%= @movie['id'] %>/edit' method='post' enctype="multipart/form-data"> 
+    <input type='text' placeholder='title' name='title' value='<%= @movie['title'] %>'>
+    <br>
+    <input type='text' placeholder='beskrivning' name='description' value='<%= @movie['description'] %>'>
+    <br>
+    <input type='text' placeholder='år' name='year' value='<%= @movie['year'] %>'>
+    <br>
+    <% @all_geaneras.each do |item| %>
+      <% if @movie_geaneras.include?(item['id'].to_i) %>
+        <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>" checked> <%= item['geanera_name'] %><br>
+      <% else %>
+        <input type="checkbox" name="geanera_id[]" value="<%= item['id'] %>"> <%= item['geanera_name'] %><br>
+      <% end %>
     <% end %>
-  <% end %>
-  <br>
-  <% @cast_join.each do |cast| %>
-        <%= cast['name'] %>,
-        <br>
-    <% end %>
-  <br>
-  <select id="actorSelector">
-    <% @all_cast.each do |actor| %>
-      <option value="<%= actor['id'] %>"><%= actor['name'] %></option>
-    <% end %>
-  </select>
-  <button type="button" onclick="addActor()">Add Actor</button>
-  <br>
-  <ul id="selectedActor"></ul>
-  <input type="hidden" name="selectedActor" id="selectedActorInput" value="">
-  <p>cant fid actor in list?</p>
-  <a href="/actors/new" class="button">Add new actors</a>
-  <br>
-  <br>
-  <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @movie['image'] %>">
-  <br>
-  <button type='submit'>Spara</button>
+    <br>
+    <% @cast_join.each do |cast| %>
+          <%= cast['name'] %>,
+          <br>
+      <% end %>
+    <br>
+    <select id="actorSelector">
+      <% @all_cast.each do |actor| %>
+        <option value="<%= actor['id'] %>"><%= actor['name'] %></option>
+      <% end %>
+    </select>
+    <button type="button" onclick="addActor()">Add Actor</button>
+    <br>
+    <ul id="selectedActor"></ul>
+    <input type="hidden" name="selectedActor" id="selectedActorInput" value="">
+    <p>cant fid actor in list?</p>
+    <a href="/actors/new" class="button">Add new actors</a>
+    <br>
+    <br>
+    <input type="file" placeholder='bild' name='image' accept='image/*' value="<%= @movie['image'] %>">
+    <br>
+    <button type='submit'>Spara</button>
 </form>
+<% else %>
+    <h1>You do not have acces to this page</h1>
+    <h2>sign up or log in to accses</h2>
+    <ul>
+      <% if @username %>
+        <form action="/logout" method="post">
+          <li><button type="submit">Logout</button></li>
+        </form>
+      <% else %>
+        <li><button><a href="/login">login</a></button></li>
+        <li><button><a href="/register">register</a></button></li>
+      <% end %>
+<% end %>
 </body>
 <script>
   function addActor() {

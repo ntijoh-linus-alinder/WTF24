@@ -11,12 +11,20 @@
   <header>
     <h1>Cinematrix</h1>
     <ul>
-      <li>movies</li>
-      <li>log in</li>
-      <% if !session[:user_id].nil? %>
-          <li>User:<%=@username%></li>
+      <% if @username %>
+        <form action="/logout" method="post">
+          <li><button type="submit">Logout</button></li>
+        </form>
+      <% else %>
+        <li><button><a href="/login">login</a></button></li>
+        <li><button><a href="/register">register</a></button></li>
       <% end %>
+      <% if @username %>
+      <li>user: <%= @username%></li>
+      <% end %>
+
     </ul>
+
   </header>
 <div class="container">
 <% @data.each do |movie| %>
@@ -28,7 +36,9 @@
     </div>
   </a>
 <% end %> 
+<% if @username %>
 <a href="/movies/new" class="button"><button>New movie</button></a>
+<% end %>
 </div>
 
 </body>

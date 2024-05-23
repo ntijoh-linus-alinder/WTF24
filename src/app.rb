@@ -1,5 +1,6 @@
+require 'debug'
 class App < Sinatra::Base
-    enable :session
+    enable :sessions
 
     def db
         if @db == nil
@@ -18,7 +19,6 @@ class App < Sinatra::Base
     end
 
     get '/movies' do
-        
         @data = db.execute('SELECT * FROM movies')
         erb :'/movies/index'
     end
@@ -30,41 +30,43 @@ class App < Sinatra::Base
     end
 
     post '/movies' do 
-        title = params['title']
-        description = params['description'] 
-        year = params['year'] 
-    
-        geanera_ids = params['geanera_id'] 
-        cast_id = params['cast_id']
-        selected_actors = params['actors'] || []
-        image = params["image"]
+        if @username
+            title = params['title']
+            description = params['description'] 
+            year = params['year'] 
         
-        if image && image[:filename]
-            File.open('public/img/' + image[:filename], "w") do |f|
-                f.write(image[:tempfile].read)
+            geanera_ids = params['geanera_id'] 
+            cast_id = params['cast_id']
+            selected_actors = params['actors'] || []
+            image = params["image"]
+            
+            if image && image[:filename]
+                File.open('public/img/' + image[:filename], "w") do |f|
+                    f.write(image[:tempfile].read)
+                end
+                image_path = "img/#{image[:filename]}"
+            else
+                image_path = nil
             end
-            image_path = "img/#{image[:filename]}"
-        else
-            image_path = nil
-        end
-    
-        query = 'INSERT INTO movies (title,description,year,image) VALUES (?,?,?,?) RETURNING *'
-    
-        result = db.execute(query, title, description, year, image_path).first
-    
-        unless geanera_ids.nil? || geanera_ids.empty?
-            geanera_ids.each do |geanera|
-                db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
-            end
-        end
-    
-        selected_actors.each do |actor_id|
-            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], actor_id)
-        end
-    
-        db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], cast_id)
         
-        redirect "/movies/#{result['id']}"   
+            query = 'INSERT INTO movies (title,description,year,image) VALUES (?,?,?,?) RETURNING *'
+        
+            result = db.execute(query, title, description, year, image_path).first
+        
+            unless geanera_ids.nil? || geanera_ids.empty?
+                geanera_ids.each do |geanera|
+                    db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, result['id'])
+                end
+            end
+        
+            selected_actors.each do |actor_id|
+                db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], actor_id)
+            end
+        
+            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', result['id'], cast_id)
+            
+            redirect "/movies/#{result['id']}"  
+        end 
     end
 
 
@@ -92,67 +94,73 @@ class App < Sinatra::Base
     end
 
     post '/actors' do 
-        name = params['name']
-        db.execute('INSERT INTO casts (name) VALUES (?)', name)
-        redirect "/actors/new" 
+        if @username
+            name = params['name']
+            db.execute('INSERT INTO casts (name) VALUES (?)', name)
+            redirect "/actors/new" 
+        end
     end
 
     post '/movies/:id/edit' do
-        id = params[:id]
-        title = params['title']
-        description = params['description'] 
-        year = params['year'] 
-        geanera_ids = params['geanera_id']
-        selected_actors = params['actors'] || []
-        cast_id = params['cast_id']
-        image = params["image"]
+        if @username
+            id = params[:id]
+            title = params['title']
+            description = params['description'] 
+            year = params['year'] 
+            geanera_ids = params['geanera_id']
+            selected_actors = params['actors'] || []
+            cast_id = params['cast_id']
+            image = params["image"]
+            
+            if image && image[:filename]
+                old_image_path = db.execute('SELECT image FROM movies WHERE id = ?', id).first['image']
+                if old_image_path && File.exist?('public/' + old_image_path)
+                    File.delete('public/' + old_image_path)
+                end
         
-        if image && image[:filename]
-            old_image_path = db.execute('SELECT image FROM movies WHERE id = ?', id).first['image']
-            if old_image_path && File.exist?('public/' + old_image_path)
-                File.delete('public/' + old_image_path)
+                File.open('public/img/' + image[:filename], "w") do |f|
+                    f.write(image[:tempfile].read)
+                end
+                image_path = "img/#{image[:filename]}"
+            else
+                image_path = nil
             end
-    
-            File.open('public/img/' + image[:filename], "w") do |f|
-                f.write(image[:tempfile].read)
+        
+            if image_path.nil?
+                query = 'UPDATE movies SET title = ?, description = ?, year = ? WHERE id = ?'
+                result = db.execute(query, title, description, year, id)
+            else 
+                query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
+                result = db.execute(query, title, description, year, image_path, id)
             end
-            image_path = "img/#{image[:filename]}"
-        else
-            image_path = nil
-        end
-    
-        if image_path.nil?
-            query = 'UPDATE movies SET title = ?, description = ?, year = ? WHERE id = ?'
-            result = db.execute(query, title, description, year, id)
-        else 
-            query = "UPDATE movies SET title = ?, description = ?, year = ?, image = ? WHERE id = ?"
-            result = db.execute(query, title, description, year, image_path, id)
-        end
-    
-        db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
-    
-        geanera_ids.each do |geanera|
-            db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
-        end
+        
+            db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
+        
+            geanera_ids.each do |geanera|
+                db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
+            end
 
-        selected_actors.each do |actor_id|
-            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, actor_id)
+            selected_actors.each do |actor_id|
+                db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, actor_id)
+            end
+        
+            db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, cast_id)
+        
+            redirect "/movies/#{id}"
         end
-    
-        db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, cast_id)
-    
-        redirect "/movies/#{id}"
     end
     
     
 
     post '/movies/:id/delete' do
-        id = params[:id]
+        if @username
+            id = params[:id]
 
-        db.execute('DELETE FROM movies WHERE id = ?', id)
-        db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
-        db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id.to_i)
-        redirect "/movies"
+            db.execute('DELETE FROM movies WHERE id = ?', id)
+            db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
+            db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id.to_i)
+            redirect "/movies"
+        end
     end
     
     
@@ -185,31 +193,40 @@ class App < Sinatra::Base
         erb :'/users/edit'
     end
 
-    post '/register' do
-        email = params['email']
-        username = params['username']
-        cleartext_password = params['password']
-        hashed_password = BCrypt::Password.create(cleartext_password)
 
-        db.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)', email, username, hashed_password)
-        redirect '/login'
+
+    post '/register' do
+            email = params['email']
+            username = params['username']
+            cleartext_password = params['password']
+            hashed_password = BCrypt::Password.create(cleartext_password)
+
+            db.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)', email, username, hashed_password)
+            redirect '/login'
     end
 
     post '/login' do
-        username = params['username']
-        cleartext_password = params['password'] 
-      
-        user = db.execute('SELECT * FROM users WHERE username = ?', username).first
-        password_from_db = BCrypt::Password.new(user['password'])
+            username = params['username']
+            cleartext_password = params['password'] 
+        
+            user = db.execute('SELECT * FROM users WHERE username = ?', username).first
+            password_from_db = BCrypt::Password.new(user['password'])
 
-        if password_from_db == cleartext_password 
-          session[:user_id] = user['user_id'] 
-          session[:username] = username  
-          p "hej    "
-          redirect '/movies'  
-        else
-          nil
-        end
-
+            if password_from_db == cleartext_password
+            session[:user_id] = user['user_id'] 
+            session[:username] = username  
+            p session[:user_id] 
+            p session[:username]
+            redirect '/movies'  
+            else
+            redirect '/login'  
+            end
     end
+
+    post '/logout' do
+        session.destroy
+        redirect '/movies'
+    end
+
+
 end
