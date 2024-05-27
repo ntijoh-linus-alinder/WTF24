@@ -202,7 +202,7 @@ class App < Sinatra::Base
         erb :'/users/register'
     end
     get '/users/edit' do
-
+        @all_users = db.execute('SELECT * FROM users')
         erb :'/users/edit'
     end
 
@@ -212,9 +212,11 @@ class App < Sinatra::Base
             email = params['email']
             username = params['username']
             cleartext_password = params['password']
+            admin = 0
+
             hashed_password = BCrypt::Password.create(cleartext_password)
 
-            db.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)', email, username, hashed_password)
+            db.execute('INSERT INTO users (email, username, password, admin) VALUES (?, ?, ?, ?)', email, username, hashed_password, admin)
             redirect '/login'
     end
 

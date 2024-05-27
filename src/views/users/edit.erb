@@ -1,0 +1,13 @@
+<% @all_users.each do |user| %>
+  <p><%= user['user_id']%> <%= user['username']%> <%= user['email']%> <%= user['admin']%></p>
+
+    <form action='/users/edit' method='post' enctype="multipart/form-data"> 
+        <input type='text' placeholder='username' name='username' value='<%= user['username'] %>'>
+        <input type='text' placeholder='email' name='email' value='<%= user['email'] %>'>
+        <select name='admin'>
+        <option value="1">1</option>
+        <option value="0">0</option>
+    </select>
+    <button type="submit">save</button>
+    </form>
+<% end %> 
