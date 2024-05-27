@@ -1,4 +1,4 @@
-<% if @username %>
+<% if @user %>
 <form action='/actors' method='post' enctype="multipart/form-data"> 
     <input type='text' placeholder='namn' name='name'>
     <button type='submit'>Spara</button>
@@ -12,7 +12,7 @@
     <h1>You do not have acces to this page</h1>
     <h2>sign up or log in to accses</h2>
     <ul>
-      <% if @username %>
+      <% if @user %>
         <form action="/logout" method="post">
           <li><button type="submit">Logout</button></li>
         </form>

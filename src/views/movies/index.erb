@@ -11,7 +11,7 @@
   <header>
     <h1>Cinematrix</h1>
     <ul>
-      <% if @username %>
+      <% if @user %>
         <form action="/logout" method="post">
           <li><button type="submit">Logout</button></li>
         </form>
@@ -19,8 +19,8 @@
         <li><button><a href="/login">login</a></button></li>
         <li><button><a href="/register">register</a></button></li>
       <% end %>
-      <% if @username %>
-      <li>user: <%= h(@username)%></li>
+      <% if @user %>
+      <li>user: <%= h(@user['username'])%></li>
       <% end %>
 
     </ul>
@@ -36,7 +36,7 @@
     </div>
   </a>
 <% end %> 
-<% if @username %>
+<% if @user %>
 <a href="/movies/new" class="button"><button>New movie</button></a>
 <% end %>
 </div>

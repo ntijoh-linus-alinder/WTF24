@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-<% if @username %>
+<% if @user %>
   <form action='/movies/<%= @movie['id'] %>/edit' method='post' enctype="multipart/form-data"> 
     <input type='text' placeholder='title' name='title' value='<%= @movie['title'] %>'>
     <br>
@@ -48,7 +48,7 @@
     <h1>You do not have acces to this page</h1>
     <h2>sign up or log in to accses</h2>
     <ul>
-      <% if @username %>
+      <% if @user %>
         <form action="/logout" method="post">
           <li><button type="submit">Logout</button></li>
         </form>

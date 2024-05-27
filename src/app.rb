@@ -21,7 +21,9 @@ class App < Sinatra::Base
     end
 
     before do
-        @username = session[:username]
+        if session && session[:user_id]
+            @user = db.execute('SELECT * FROM users WHERE user_id = ?', session[:user_id]).first
+        end
     end
 
     get '/' do
@@ -40,12 +42,12 @@ class App < Sinatra::Base
     end
 
     post '/movies' do 
-        if @username
+        if @user
             title = params['title']
-            description = params['description'] 
-            year = params['year'] 
+            description = params['description']
+            year = params['year']
         
-            geanera_ids = params['geanera_id'] 
+            geanera_ids = params['geanera_id']
             cast_id = params['cast_id']
             selected_actors = params['actors'] || []
             image = params["image"]
@@ -104,7 +106,7 @@ class App < Sinatra::Base
     end
 
     post '/actors' do 
-        if @username
+        if @user
             name = params['name']
             db.execute('INSERT INTO casts (name) VALUES (?)', name)
             redirect "/actors/new" 
@@ -112,11 +114,11 @@ class App < Sinatra::Base
     end
 
     post '/movies/:id/edit' do
-        if @username
+        if @user
             id = params[:id]
             title = params['title']
-            description = params['description'] 
-            year = params['year'] 
+            description = params['description']
+            year = params['year']
             geanera_ids = params['geanera_id']
             selected_actors = params['actors'] || []
             cast_id = params['cast_id']
@@ -166,17 +168,17 @@ class App < Sinatra::Base
     
 
     post '/movies/:id/delete' do
-        if @username
+        if @user['admin'] == 1
             id = params[:id]
-
             db.execute('DELETE FROM movies WHERE id = ?', id)
             db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
             db.execute('DELETE FROM movies_casts WHERE movie_id = ?', id.to_i)
             redirect "/movies"
+        else
+            redirect "/movies"
         end
-    end
-    
-    
+    end 
+
 
     get '/movies/:id' do
         @data = db.execute('SELECT * FROM movies WHERE id = ?', params[:id])
@@ -206,6 +208,18 @@ class App < Sinatra::Base
         erb :'/users/edit'
     end
 
+    post '/users/edit' do
+        if @user['admin'] == 1
+            email = params['email']
+            username = params['username']
+            admin = params['admin'] || []
+            user_id = params['user_id']
+        
+            db.execute('UPDATE users SET email = ?, username = ?, admin = ? WHERE user_id = ?', email, username, admin.to_i, user_id)
+            redirect '/users/edit'
+        end
+    end
+
 
 
     post '/register' do
@@ -222,7 +236,7 @@ class App < Sinatra::Base
 
     post '/login' do
         username = params['username']
-        cleartext_password = params['password'] 
+        cleartext_password = params['password']
     
         user = db.execute('SELECT * FROM users WHERE username = ?', username).first
     
@@ -233,9 +247,11 @@ class App < Sinatra::Base
     
             if password_from_db == cleartext_password
                 session[:user_id] = user['user_id'] 
-                session[:username] = username  
-                p session[:user_id] 
-                p session[:username]
+               # session[:username] = username
+               # @admin = user['admin']
+               # p session[:user_id] 
+               # p session[:username]
+               # p user['admin']
                 redirect '/movies'  
             else
                 redirect '/login'  

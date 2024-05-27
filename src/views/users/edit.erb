@@ -1,13 +1,21 @@
-<% @all_users.each do |user| %>
-  <p><%= user['user_id']%> <%= user['username']%> <%= user['email']%> <%= user['admin']%></p>
+<% if @user['admin'] == 1 %>
+  
+  <% @all_users.each do |user| %>
+    <p><%= user['user_id'] %> <%= user['username'] %> <%= user['email'] %> <%= user['admin'] %></p>
 
     <form action='/users/edit' method='post' enctype="multipart/form-data"> 
+        <input type='hidden' name='user_id' value='<%= user['user_id'] %>'>
         <input type='text' placeholder='username' name='username' value='<%= user['username'] %>'>
         <input type='text' placeholder='email' name='email' value='<%= user['email'] %>'>
         <select name='admin'>
-        <option value="1">1</option>
-        <option value="0">0</option>
-    </select>
-    <button type="submit">save</button>
+            <option value="<%= user['admin'] %>"><%= user['admin'] %></option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+        </select>
+        <button type="submit">save</button>
     </form>
-<% end %> 
+  <% end %>
+<% else %>
+  <h1>you do not have access to this page. </h1>
+  
+<% end %>

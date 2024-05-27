@@ -29,12 +29,15 @@
     <% end %>
     </label>
     <br>
-    <% if @username %>
+    <% if @user %>
     <a href="/movies/<%= movie['id'] %>/edit" class="button"><button>edit</button></a>
-    <form action='/movies/<%= movie['id'] %>/delete' method='post'>
-        <button type="submit">delete</button>
-    </form>
-        <% end %>
+    <% if @user['admin'] == 1 %>
+        <form action='/movies/<%= movie['id'] %>/delete' method='post'>
+            <button type="submit">delete</button>
+        </form>
+            <% end %>  
+    <% end %>
+   
 <% end %>
 
 </body>
