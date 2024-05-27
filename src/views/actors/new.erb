@@ -5,7 +5,7 @@
 </form> 
 
   <% @all_cast.each do |cast| %>
-    <%= cast['name'] %>
+    <%= h(cast['name']) %>
     <br>
   <% end %>
   <% else %>

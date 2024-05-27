@@ -23,13 +23,13 @@
     <% end %>
     <br>
     <% @cast_join.each do |cast| %>
-          <%= cast['name'] %>,
+          <%= h(cast['name']) %>,
           <br>
       <% end %>
     <br>
     <select id="actorSelector">
       <% @all_cast.each do |actor| %>
-        <option value="<%= actor['id'] %>"><%= actor['name'] %></option>
+        <option value="<%= h(actor['id']) %>"><%= h(actor['name']) %></option>
       <% end %>
     </select>
     <button type="button" onclick="addActor()">Add Actor</button>

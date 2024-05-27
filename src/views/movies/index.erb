@@ -20,7 +20,7 @@
         <li><button><a href="/register">register</a></button></li>
       <% end %>
       <% if @username %>
-      <li>user: <%= @username%></li>
+      <li>user: <%= h(@username)%></li>
       <% end %>
 
     </ul>
@@ -28,11 +28,11 @@
   </header>
 <div class="container">
 <% @data.each do |movie| %>
-  <a href="/movies/<%= movie['id'] %>">
+  <a href="/movies/<%= h(movie['id']) %>">
     <div class="card">
-      <div class="image"><img class="image" src="<%= movie['image'] %>"></div>
-      <div class="title"><%= movie['title'] %></div>
-      <div class="geanera"><%= movie['geanera'] %></div>
+      <div class="image"><img class="image" src="<%= h(movie['image']) %>"></div>
+      <div class="title"><%= h(movie['title']) %></div>
+      <div class="geanera"><%= h(movie['geanera']) %></div>
     </div>
   </a>
 <% end %> 

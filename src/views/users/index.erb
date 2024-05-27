@@ -1,8 +1,12 @@
-<p>login</p>
-<form action="/login" method="post">
-<input type="text" placeholder='username' name="username">
-<br>
-<input type="password" placeholder='password'name="password">
-<button type="submit">login</button>
+<% if @username %>
+        <h1>you are alredry signed in</h1>
+<% else %>
+    <p>login</p>
+    <form action="/login" method="post">
+    <input type="text" placeholder='username' name="username">
+    <br>
+    <input type="password" placeholder='password'name="password">
+    <button type="submit">login</button>
 
-</form>
+    </form>
+<% end %>

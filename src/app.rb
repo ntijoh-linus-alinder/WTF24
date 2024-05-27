@@ -1,6 +1,16 @@
 require 'debug'
 class App < Sinatra::Base
     enable :sessions
+    
+    helpers do
+        def h(text)
+          Rack::Utils.escape_html(text)
+        end
+      
+        def hattr(text)
+          Rack::Utils.escape_path(text)
+        end
+    end
 
     def db
         if @db == nil
@@ -135,10 +145,13 @@ class App < Sinatra::Base
             end
         
             db.execute('DELETE FROM movies_geaneras WHERE movie_id = ?', id)
-        
-            geanera_ids.each do |geanera|
-                db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera, id)
+
+            unless geanera_ids.nil? || geanera_ids.empty?
+                geanera_ids.each do |geanera|
+                    db.execute('INSERT INTO movies_geaneras (geanera_id, movie_id) VALUES (?,?)', geanera.to_i, id)
+                end
             end
+
 
             selected_actors.each do |actor_id|
                 db.execute('INSERT INTO movies_casts (movie_id, cast_id) VALUES (?, ?)', id, actor_id)
@@ -206,22 +219,28 @@ class App < Sinatra::Base
     end
 
     post '/login' do
-            username = params['username']
-            cleartext_password = params['password'] 
-        
-            user = db.execute('SELECT * FROM users WHERE username = ?', username).first
+        username = params['username']
+        cleartext_password = params['password'] 
+    
+        user = db.execute('SELECT * FROM users WHERE username = ?', username).first
+    
+        if user.nil?
+            redirect '/login'
+        else
             password_from_db = BCrypt::Password.new(user['password'])
-
+    
             if password_from_db == cleartext_password
-            session[:user_id] = user['user_id'] 
-            session[:username] = username  
-            p session[:user_id] 
-            p session[:username]
-            redirect '/movies'  
+                session[:user_id] = user['user_id'] 
+                session[:username] = username  
+                p session[:user_id] 
+                p session[:username]
+                redirect '/movies'  
             else
-            redirect '/login'  
+                redirect '/login'  
             end
+        end
     end
+    
 
     post '/logout' do
         session.destroy
